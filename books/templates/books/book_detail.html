@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Book Detail</title>
+    </head>
+    <body>
+        <p> Book Name: {{ book.book_name }} | <a href="{% url 'books:book_update' book.id %}">Update</a> |
+            <a href="{% url 'books:book_delete' book.id %}">Delete</a>
+        </p>
+        <p> Book Price: {{ book.price }} </p>
+        <p> <a href="{% url 'books:book_list' %}">View All Books</a> |
+            <a href="{% url 'books:book_create'%}">New Book</a>
+        </p>
+    </body>
+</html>

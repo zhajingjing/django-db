@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+ <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>User Detail</title>
+    </head>
+    <body>
+        <p> User Name: {{ user.user_name }} | <a href="{% url 'books:user_update' user.id %}">Update</a> |
+            <a href="{% url 'books:user_delete' user.id %}">Delete</a>
+        </p>
+        <p> User Age: {{ user.age }} </p>
+        <p> Liked books:
+            <ul>
+                {% for book in user.liked_books.all %}
+                    <li>{{ book.book_name }}</li>
+                {% endfor %}
+            </ul>
+        </p>
+        <p> <a href="{% url 'books:user_list' %}">View All Users</a> |
+            <a href="{% url 'books:user_create'%}">New User</a>
+        </p>
+    </body>
+    </html>

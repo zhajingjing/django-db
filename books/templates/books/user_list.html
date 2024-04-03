@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>User List</title>
+    </head>
+    <body>
+        <h3>User List</h3>
+        <p><a href="{% url 'books:book_list' %}">Book</a> | <a href="{% url 'books:user_list' %}">User</a></p>
+        <form action="{% url 'books:user_query' %}" method="get" enctype="multipart/form-data">
+            {% csrf_token %}
+            <select id="q_field" name="q_field" onchange="fieldChange()">
+                <option value="user_name">user_name</option>
+                <option value="age">age</option>
+            </select>
+            <select id="q_filter" name="q_filter">
+            </select>
+            <input id="q_value" type="text" name="q_value" value="{{query_condition.q_value}}">            
+            <input type="submit" value="Submit">
+        </form>
+        {% for user in users %}
+        <p>{{ forloop.counter }}. {{ user.user_name }} - {{ user.age }}
+            (<a href="{% url 'books:user_detail' user.id %}">Detail</a> |
+            <a href="{% url 'books:user_update' user.id %}">Update</a> |
+            <a href="{% url 'books:user_delete' user.id %}">Delete</a>)
+        </p>
+        {% endfor %}
+        <div id="q-param-field" q-param="{{ query_condition.q_field }}"></div>
+        <div id="q-param-filter" q-param="{{ query_condition.q_filter }}"></div>
+        <p> <a href="{% url 'books:user_create' %}"> + Add A New User</a> | <a href="{% url 'books:user_list' %}"> Reset</a> </p>
+        <script>
+            let nameFilterText=new Array("startswith","endwith","contains");
+            let nameFilterValue=new Array("startswith","endwith","contains");
+            let ageFilterText=new Array("<",">","<>");
+            let ageFilterValue=new Array("lte","gte","between");
+
+            let fieldSelect = document.getElementById("q_field");
+            let qFieldValue = document.getElementById("q-param-field").getAttribute("q-param");
+            fieldSelect.value = qFieldValue;
+
+            let qFilterValue = document.getElementById("q-param-filter").getAttribute("q-param");
+            
+            if(qFieldValue == "user_name"){
+                setFilterSelect(nameFilterText,nameFilterValue,qFilterValue);
+            } else if(qFieldValue == "age"){
+                setFilterSelect(ageFilterText,ageFilterValue,qFilterValue);
+            }
+            
+            function setFilterSelect(text,value,selectedValue){
+                //empty filter select items
+                let oSel = document.getElementById("q_filter");
+                oSel.options.length = 0;
+                let length = value.length
+                for(i = 0; i < length; i++){
+                    let option = document.createElement("option");
+                    option.text = text[i];
+                    option.value = value[i];
+                    oSel.add(option);
+                }
+                oSel.value = selectedValue;
+            }
+
+            function fieldChange(){
+                let objS = document.getElementById("q_field");
+                let field = objS.options[objS.selectedIndex].value;
+                if(field == "user_name"){
+                    setFilterSelect(nameFilterText,nameFilterValue,"startswith");
+                }else if(field == "age"){
+                    setFilterSelect(ageFilterText,ageFilterValue,"<");
+                }
+            } 
+        </script>
+    </body>
+</html>

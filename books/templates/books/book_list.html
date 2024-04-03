@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Book List</title>
+    </head>
+    <body>
+        <h3>Book List</h3>
+        <p><a href="{% url 'books:book_list' %}">Book</a> | <a href="{% url 'books:user_list' %}">User</a></p>
+        <form action="{% url 'books:book_query' %}" method="get" enctype="multipart/form-data">
+            {% csrf_token %}
+            <select id="q_field" name="q_field" onchange="fieldChange()">
+                <option value="book_name">book_name</option>
+                <option value="price">price</option>
+            </select>
+            <select id="q_filter" name="q_filter">
+            </select>
+            <input id="q_value" type="text" name="q_value" value="{{query_condition.q_value}}">            
+            <input type="submit" value="Submit">
+        </form>
+        {% for book in books %}
+        <p>{{ forloop.counter }}. {{ book.book_name }} - {{ book.price }}
+            (<a href="{% url 'books:book_detail' book.id %}">Detail</a> |
+            <a href="{% url 'books:book_update' book.id %}">Update</a> |
+            <a href="{% url 'books:book_delete' book.id %}">Delete</a>)
+        </p>
+        {% endfor %}
+        
+        <div id="q-param-field" q-param="{{ query_condition.q_field }}"></div>
+        <div id="q-param-filter" q-param="{{ query_condition.q_filter }}"></div>
+
+        <p> <a href="{% url 'books:book_create' %}"> + Add A New Book</a> | <a href="{% url 'books:book_list' %}"> Reset</a> </p>
+        <script>
+            let nameFilterText=new Array("startswith","endwith","contains");
+            let nameFilterValue=new Array("startswith","endwith","contains");
+            let priceFilterText=new Array("<",">","<>");
+            let priceFilterValue=new Array("lte","gte","between");
+
+            let fieldSelect = document.getElementById("q_field");
+            let qFieldValue = document.getElementById("q-param-field").getAttribute("q-param");
+            fieldSelect.value = qFieldValue;
+
+            let qFilterValue = document.getElementById("q-param-filter").getAttribute("q-param");
+            
+            if(qFieldValue == "book_name"){
+                setFilterSelect(nameFilterText,nameFilterValue,qFilterValue);
+            } else if(qFieldValue == "price"){
+                setFilterSelect(priceFilterText,priceFilterValue,qFilterValue);
+            }
+            
+            function setFilterSelect(text,value,selectedValue){
+                //empty filter select items
+                let oSel = document.getElementById("q_filter");
+                oSel.options.length = 0;
+                let length = value.length
+                for(i = 0; i < length; i++){
+                    let option = document.createElement("option");
+                    option.text = text[i];
+                    option.value = value[i];
+                    oSel.add(option);
+                }
+                oSel.value = selectedValue;
+            }
+
+            function fieldChange(){
+                let objS = document.getElementById("q_field");
+                let field = objS.options[objS.selectedIndex].value;
+                if(field == "book_name"){
+                    setFilterSelect(nameFilterText,nameFilterValue,"startswith");
+                }else if(field == "price"){
+                    setFilterSelect(priceFilterText,priceFilterValue,"<");
+                }
+            } 
+        </script>
+    </body>
+</html>
